@@ -24,12 +24,14 @@ def assign(task, mode):
         print('People_List.txt is missing. Already create it for you.')
         with open(os.path.join(here, 'People_List.txt'), 'w', encoding='utf-8') as f:
             f.write('\n'.join(['Name1', 'Name2', '#Name3', 'Name4']))
+        click.pause()
         return
 
     try:
         per = task//len(people_list)
     except ZeroDivisionError:
         print('People_List.txt has no valid content.')
+        click.pause()
         return
 
     if task % len(people_list):
@@ -55,6 +57,7 @@ def assign(task, mode):
     with open(os.path.join(here, 'Result.txt'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(result))
     print('\n'.join(print_result))
+    click.pause()
 
 
 @click.command(help='Assign task according people list.')
