@@ -21,7 +21,9 @@ def assign(task, mode):
             people_list = [i for i in people_list if i != '']
             people_list = [i for i in people_list if i[0] != '#']
     except FileNotFoundError:
-        print('People_List.txt is missing.')
+        print('People_List.txt is missing. Already create it for you.')
+        with open(os.path.join(here, 'People_List.txt'), 'w', encoding='utf-8') as f:
+            f.write('\n'.join(['Name1', 'Name2', '#Name3', 'Name4']))
         return
 
     try:
