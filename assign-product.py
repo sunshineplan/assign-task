@@ -3,7 +3,6 @@
 import os
 import sys
 from csv import DictReader, DictWriter
-from math import ceil
 
 import click
 
@@ -11,7 +10,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 _list = []
 try:
-    with open(os.path.join(here, 'ProductContent_List.csv'), newline='') as csvfile:
+    with open(os.path.join(here, 'ProductContent_List.csv'), encoding='utf-8-sig', newline='') as csvfile:
         reader = DictReader(csvfile)
         for i in reader:
             _list.append(i)
@@ -44,28 +43,37 @@ class AssignProduct:
         self.loop = 1
 
     def assign_once(self):
-        self.result.sort(key=sumDictList)
-        self.result[0].append(_list.pop())
         _max = 0
+        _average = 0
         for i in self.result:
+            _average += sumDictList(i)
             if _max < sumDictList(i):
                 _max = sumDictList(i)
+        _average = _average/len(self.result)
+        self.result.sort(key=sumDictList)
+        self.result[0].append(_list.pop())
+        if sumDictList(self.result[0]) < _average:
+            self.result[0].append(_list.pop())
         for n in range(1, self._product_count):
+            if len(self.result[n]) == self.loop + 1:
+                continue
             for i in _list:
                 if sumDictList(self.result[n]) + getDictValue(i) > _max:
                     self.result[n].append(_list.pop(_list.index(i)))
                     break
-            if len(self.result[n]) != self.loop + 1:
-                self.result[n].append(_list.pop(-1))
+            if len(self.result[n]) < self.loop + 1:
+                self.result[n].append(_list.pop())
 
     def run(self):
         for _ in range(self._product_count):
             self.result.append([_list.pop()])
-        for _ in range(ceil(len(_list)/self._product_count)-1):
+        for _ in range(len(_list)//self._product_count-1):
             self.assign_once()
             self.loop += 1
         self.result.sort(key=sumDictList)
         for n in range(self._product_count):
+            if len(self.result[n]) == self.loop + 1:
+                continue
             if len(_list) != 0:
                 self.result[n].append(_list.pop())
         try:
