@@ -27,7 +27,7 @@ def getDictValue(d):
     return int(d['total'])
 
 
-_list.sort(key=getDictValue, reverse=True)
+_list.sort(key=getDictValue)
 
 
 def sumDictList(dictList):
@@ -41,44 +41,47 @@ class AssignProduct:
     def __init__(self, count):
         self._product_count = count
         self.result = []
+        self.loop = 1
 
     def assign_once(self):
         self.result.sort(key=sumDictList)
-        self.result[0].append(_list.pop(0))
+        self.result[0].append(_list.pop())
         _max = 0
         for i in self.result:
             if _max < sumDictList(i):
                 _max = sumDictList(i)
         for n in range(1, self._product_count):
             for i in _list:
-                if sumDictList(self.result[n]) + getDictValue(i) < _max:
-                    if _list.index(i) == 0:
-                        self.result[n].append(_list.pop(0))
-                    else:
-                        self.result[n].append(_list.pop(_list.index(i)-1))
+                if sumDictList(self.result[n]) + getDictValue(i) > _max:
+                    self.result[n].append(_list.pop(_list.index(i)))
                     break
+            if len(self.result[n]) != self.loop + 1:
+                self.result[n].append(_list.pop(-1))
 
     def run(self):
         for _ in range(self._product_count):
-            self.result.append([_list.pop(0)])
+            self.result.append([_list.pop()])
         for _ in range(ceil(len(_list)/self._product_count)-1):
             self.assign_once()
+            self.loop += 1
         self.result.sort(key=sumDictList)
         for n in range(self._product_count):
             if len(_list) != 0:
-                self.result[n].append(_list.pop(0))
+                self.result[n].append(_list.pop())
         try:
             with open(os.path.join(here, 'Result.csv'), 'w', encoding='utf-8-sig', newline='') as f:
                 fieldnames = ['id', 'total', 'product']
                 output = DictWriter(f, fieldnames, extrasaction='ignore')
                 output.writeheader()
                 for n in range(self._product_count):
-                    click.echo(str(n+1)+': '+str(len(self.result[n]))+'-'+str(sumDictList(self.result[n])))
+                    click.echo(
+                        str(n+1)+': '+str(len(self.result[n]))+'-'+str(sumDictList(self.result[n])))
                     for i in self.result[n]:
                         i['product'] = n+1
                     output.writerows(self.result[n])
         except PermissionError:
-            click.echo('Write Result.csv failed. Permission denied. Maybe this file was opened.')
+            click.echo(
+                'Write Result.csv failed. Permission denied. Maybe this file was opened.')
             click.pause('Press any key to exit ...')
             sys.exit()
         click.pause('Job done. Press any key to exit ...')
