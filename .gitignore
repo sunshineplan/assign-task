@@ -3,4 +3,5 @@ dist/
 build/
 *.spec
 *.txt
+*.csv
 !*example*
