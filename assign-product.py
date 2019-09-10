@@ -82,7 +82,7 @@ class AssignProduct:
 def run(count):
     if not count:
         count = click.prompt('Please input product count',
-                               type=click.IntRange(1))
+                             type=click.IntRange(1))
     AssignProduct(count).run()
 
 
