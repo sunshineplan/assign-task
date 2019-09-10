@@ -16,10 +16,10 @@ try:
         for i in reader:
             _list.append(i)
 except FileNotFoundError:
-    print('ProductContent_List.csv is missing. Already create it for you.')
+    click.echo('ProductContent_List.csv is missing. Already create it for you.')
     with open(os.path.join(here, 'ProductContent_List.csv'), 'w', encoding='utf-8-sig', newline='') as f:
         f.write('id,total')
-    click.pause()
+    click.pause('Press any key to exit ...')
     sys.exit()
 
 
@@ -67,14 +67,21 @@ class AssignProduct:
         for n in range(self._product_count):
             if len(_list) != 0:
                 self.result[n].append(_list.pop(0))
-        with open(os.path.join(here, 'Result.csv'), 'w', encoding='utf-8-sig', newline='') as f:
-            fieldnames = ['id', 'total', 'product']
-            output = DictWriter(f, fieldnames, extrasaction='ignore')
-            output.writeheader()
-            for n in range(self._product_count):
-                for i in self.result[n]:
-                    i['product'] = n+1
-                output.writerows(self.result[n])
+        try:
+            with open(os.path.join(here, 'Result.csv'), 'w', encoding='utf-8-sig', newline='') as f:
+                fieldnames = ['id', 'total', 'product']
+                output = DictWriter(f, fieldnames, extrasaction='ignore')
+                output.writeheader()
+                for n in range(self._product_count):
+                    click.echo(str(n+1)+': '+str(len(self.result[n]))+'-'+str(sumDictList(self.result[n])))
+                    for i in self.result[n]:
+                        i['product'] = n+1
+                    output.writerows(self.result[n])
+        except PermissionError:
+            click.echo('Write Result.csv failed. Permission denied. Maybe this file was opened.')
+            click.pause('Press any key to exit ...')
+            sys.exit()
+        click.pause('Job done. Press any key to exit ...')
 
 
 @click.command(help='Assign products according product content list.')
