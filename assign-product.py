@@ -3,6 +3,7 @@
 import os
 import sys
 from csv import DictReader, DictWriter
+from math import ceil
 
 import click
 
@@ -40,9 +41,11 @@ class AssignProduct:
     def __init__(self, count):
         self._product_count = count
         self.result = []
-        self.loop = 1
+        self.loop = 0
 
     def assign_once(self):
+        self.result.sort(key=sumDictList)
+        self.result[0].append(_list.pop())
         _max = 0
         _average = 0
         for i in self.result:
@@ -50,8 +53,6 @@ class AssignProduct:
             if _max < sumDictList(i):
                 _max = sumDictList(i)
         _average = _average/len(self.result)
-        self.result.sort(key=sumDictList)
-        self.result[0].append(_list.pop())
         if sumDictList(self.result[0]) < _average:
             self.result[0].append(_list.pop())
         for n in range(1, self._product_count):
@@ -67,7 +68,8 @@ class AssignProduct:
     def run(self):
         for _ in range(self._product_count):
             self.result.append([_list.pop()])
-        for _ in range(len(_list)//self._product_count-1):
+        self.loop += 1
+        for _ in range(ceil(len(_list)/self._product_count)-1):
             self.assign_once()
             self.loop += 1
         self.result.sort(key=sumDictList)
