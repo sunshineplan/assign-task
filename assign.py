@@ -14,7 +14,8 @@ class Assign:
     def __init__(self):
         self._name_list = self.loadNameList()
 
-    def loadNameList(self):
+    @staticmethod
+    def loadNameList():
         try:
             with open(os.path.join(here, 'Name_List.txt'), encoding='utf-8') as f:
                 name_list = [i.rstrip('\n').strip() for i in f.readlines()]
@@ -26,11 +27,11 @@ class Assign:
             print('Name_List.txt is missing. Already create it for you.')
             with open(os.path.join(here, 'Name_List.txt'), 'w', encoding='utf-8') as f:
                 f.write('\n'.join(['Name1', 'Name2', '#Name3', 'Name4']))
-            click.pause()
+            click.pause('Press any key to exit ...')
             sys.exit()
         except ValueError:
-            click.echo('name_list.txt has no valid content.')
-            click.pause()
+            click.echo('Name_List.txt has no valid content.')
+            click.pause('Press any key to exit ...')
             sys.exit()
         return name_list
 
