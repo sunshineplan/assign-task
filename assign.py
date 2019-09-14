@@ -59,16 +59,15 @@ class AssignByName(Assign):
         return eval('{}({})'.format(choice(['ceil', 'floor']), num))
 
     def run(self):
-        total = self.total
         result = []
         print_result = []
         while True:
             try:
-                num = self.get_num(total/len(self._name_list))
+                num = self.get_num(self.total/len(self._name_list))
                 name = self._name_list.pop()
                 result += [name] * num
                 print_result += ['%s: %s' % (name, num)]
-                total -= num
+                self.total -= num
             except ZeroDivisionError:
                 break
         if self.random:
@@ -94,7 +93,6 @@ class AssignByContent(Assign):
             if not self._name_list:
                 click.echo(
                     'Name_List.txt has no valid content or missing. Use NUMBER argument instead.')
-                click.pause()
         self._content_list = self.loadContentList()
         self._count = len(self._name_list)
         self.result = []
