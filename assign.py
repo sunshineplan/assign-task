@@ -99,11 +99,13 @@ class AssignByContent(Assign):
         self.loop = 0
         self._content_list.sort(key=self.getDictValue)
         if len(self._content_list) % len(self._name_list):
+            self.max_count = ceil(len(self._content_list)/self._count)
             click.echo('Total:{}, Count:{}, Assign:{}-{}'.format(
-                len(self._content_list), self._count, len(self._content_list)//self._count, len(self._content_list)//self._count+1))
+                len(self._content_list), self._count, self.max_count-1, self.max_count))
         else:
+            self.max_count = len(self._content_list)//self._count
             click.echo('Total:{}, Count:{}, Assign:{}'.format(
-                len(self._content_list), self._count, len(self._content_list)//self._count))
+                len(self._content_list), self._count, self.max_count))
 
     @staticmethod
     def loadContentList():
@@ -149,8 +151,10 @@ class AssignByContent(Assign):
             if _max < self.sumDictList(i):
                 _max = self.sumDictList(i)
         _average = _average/len(self.result)
-        if self.sumDictList(self.result[0]) < _average:
-            if len(self.result[0]) <= self.loop + 1:
+        for _ in range(self.max_count):
+            if self.sumDictList(self.result[0]) < _average:
+                if len(self.result[0]) > self.max_count - 2:
+                    break
                 self.result[0].append(self._content_list.pop())
         for n in range(1, self._count):
             if len(self.result[n]) == self.loop + 1:
@@ -167,12 +171,12 @@ class AssignByContent(Assign):
         for _ in range(self._count):
             self.result.append([self._content_list.pop()])
         self.loop += 1
-        for _ in range(ceil(len(self._content_list)/self._count)-1):
+        for _ in range(self.max_count-2):
             self.assign_once()
             self.loop += 1
         self.result.sort(key=self.sumDictList)
         for n in range(self._count):
-            if len(self.result[n]) == self.loop + 1:
+            if len(self.result[n]) == self.max_count:
                 continue
             if len(self._content_list) != 0:
                 self.result[n].append(self._content_list.pop())
@@ -185,7 +189,7 @@ class AssignByContent(Assign):
                     for i in self.result[n]:
                         i['name'] = self._name_list[n]
                     output.writerows(self.result[n])
-                    click.echo('{} - amount: {}, number: {}'.format(
+                    click.echo('{} - assign: {}, number: {}'.format(
                         self._name_list[n], len(self.result[n]), self.sumDictList(self.result[n])))
         except PermissionError:
             click.echo(
