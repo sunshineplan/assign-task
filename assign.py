@@ -142,7 +142,6 @@ class AssignByContent(Assign):
         return total
 
     def assign_once(self):
-        self.result.sort(key=self.sumDictList)
         if len(self.result[0]) < self.max_count - 1:
             self.result[0].append(self._content_list.pop())
         _average = 0
@@ -168,20 +167,22 @@ class AssignByContent(Assign):
                     break
             if len(self.result[n]) < self.loop + 1:
                 self.result[n].append(self._content_list.pop())
+        self.result.sort(key=self.sumDictList)
 
     def run(self):
         for _ in range(self._count):
             self.result.append([self._content_list.pop()])
         self.loop += 1
+        self.result.sort(key=self.sumDictList)
         for _ in range(self.max_count-2):
             self.assign_once()
             self.loop += 1
-        self.result.sort(key=self.sumDictList)
         for n in range(self._count):
             if len(self.result[n]) == self.max_count:
                 continue
             if len(self._content_list) != 0:
                 self.result[n].append(self._content_list.pop())
+        self.result.sort(key=self.sumDictList)
         try:
             with open(os.path.join(here, 'Result.csv'), 'w', encoding='utf-8-sig', newline='') as f:
                 fieldnames = ['id', 'number', 'name']
