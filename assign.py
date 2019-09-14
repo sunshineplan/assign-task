@@ -143,7 +143,8 @@ class AssignByContent(Assign):
 
     def assign_once(self):
         self.result.sort(key=self.sumDictList)
-        self.result[0].append(self._content_list.pop())
+        if len(self.result[0]) < self.max_count - 1:
+            self.result[0].append(self._content_list.pop())
         _max = 0
         _average = 0
         for i in self.result:
@@ -153,11 +154,11 @@ class AssignByContent(Assign):
         _average = _average/len(self.result)
         for _ in range(self.max_count):
             if self.sumDictList(self.result[0]) < _average:
-                if len(self.result[0]) > self.max_count - 2:
+                if len(self.result[0]) == self.max_count - 1:
                     break
                 self.result[0].append(self._content_list.pop())
         for n in range(1, self._count):
-            if len(self.result[n]) == self.loop + 1:
+            if len(self.result[n]) == self.max_count - 1:
                 continue
             for i in self._content_list:
                 if self.sumDictList(self.result[n]) + self.getDictValue(i) > _max:
