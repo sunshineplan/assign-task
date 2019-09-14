@@ -48,10 +48,10 @@ class AssignByName(Assign):
         self.random = random
         shuffle(self._name_list)
         if total % len(self._name_list):
-            click.echo('Total:{}, People:{}, Assign:{}-{}'.format(
+            click.echo('Total:{}, Count:{}, Assign:{}-{}'.format(
                 total, len(self._name_list), total//len(self._name_list), total//len(self._name_list)+1))
         else:
-            click.echo('Total:{}, People:{}, Assign:{}'.format(
+            click.echo('Total:{}, Count:{}, Assign:{}'.format(
                 total, len(self._name_list), total//len(self._name_list)))
 
     @staticmethod
@@ -98,6 +98,12 @@ class AssignByContent(Assign):
         self.result = []
         self.loop = 0
         self._content_list.sort(key=self.getDictValue)
+        if len(self._content_list) % len(self._name_list):
+            click.echo('Total:{}, Count:{}, Assign:{}-{}'.format(
+                len(self._content_list), self._count, len(self._content_list)//self._count, len(self._content_list)//self._count+1))
+        else:
+            click.echo('Total:{}, Count:{}, Assign:{}'.format(
+                len(self._content_list), self._count, len(self._content_list)//self._count))
 
     @staticmethod
     def loadContentList():
