@@ -68,8 +68,14 @@ class AssignByName(Assign):
                 break
         if self.mode == 'random':
             shuffle(result)
-        with open(os.path.join(here, 'Result.txt'), 'w', encoding='utf-8') as f:
-            f.write('\n'.join(result))
+        try:
+            with open(os.path.join(here, 'Result.txt'), 'w', encoding='utf-8') as f:
+                f.write('\n'.join(result))
+        except PermissionError:
+            click.echo(
+                'Write Result.txt failed. Permission denied. Maybe this file was opened.')
+            click.pause('Press any key to exit ...')
+            sys.exit()
         click.echo('\n'.join(print_result))
         click.pause()
 
