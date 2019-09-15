@@ -97,7 +97,7 @@ class AssignByContent(Assign):
         self._count = len(self._name_list)
         self.result = []
         self.loop = 0
-        self._content_list.sort(key=self.getDictValue)
+        self._content_list.sort(key=lambda i: int(i['number']))
         if len(self._content_list) % len(self._name_list):
             self.max_count = ceil(len(self._content_list)/self._count)
             click.echo('Total:{}, Count:{}, Assign:{}-{}'.format(
@@ -131,10 +131,6 @@ class AssignByContent(Assign):
         return content_list
 
     @staticmethod
-    def getDictValue(d):
-        return int(d['number'])
-
-    @staticmethod
     def sumDictList(dictList):
         total = 0
         for i in dictList:
@@ -161,7 +157,7 @@ class AssignByContent(Assign):
             if len(self.result[n]) == self.max_count - 1:
                 continue
             for i in self._content_list:
-                if self.sumDictList(self.result[n]) + self.getDictValue(i) > _max:
+                if self.sumDictList(self.result[n]) + int(i['number']) > _max:
                     self.result[n].append(
                         self._content_list.pop(self._content_list.index(i)))
                     break
