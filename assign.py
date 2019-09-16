@@ -132,10 +132,7 @@ class AssignByContent(Assign):
 
     @staticmethod
     def sumDictList(dictList):
-        total = 0
-        for i in dictList:
-            total += int(i['number'])
-        return total
+        return sum([int(i['number']) for i in dictList])
 
     def assign_once(self):
         if len(self.result[0]) < self.max_count - 1:
