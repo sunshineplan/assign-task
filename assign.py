@@ -3,6 +3,7 @@
 import os
 import sys
 from csv import DictReader, DictWriter
+from json import loads
 from math import ceil, floor
 from random import choice, shuffle
 
@@ -30,7 +31,7 @@ class Assign:
                 click.echo(
                     'Name_List.txt is missing. Already create it for you.')
                 with open(os.path.join(here, 'Name_List.txt'), 'w', encoding='utf-8') as f:
-                    f.write('\n'.join(['Name1', 'Name2', '#Name3', 'Name4']))
+                    f.write('\n'.join(['Name1', 'Name2*2', '#Name3', 'Name4']))
                 click.pause('Press any key to exit ...')
                 sys.exit()
         except ValueError:
@@ -40,19 +41,39 @@ class Assign:
                 sys.exit()
         return None
 
+    @staticmethod
+    def num(string):
+        try:
+            return int(string)
+        except ValueError:
+            return float(string)
+
+    def sumDictList(self, dictList):
+        return sum([self.num(i['number']) for i in dictList])
+
 
 class AssignByName(Assign):
     def __init__(self, total, random):
         super().__init__()
         self.total = total
         self.random = random
-        shuffle(self._name_list)
-        if total % len(self._name_list):
-            click.echo('Total:{}, Count:{}, Assign:{}-{}'.format(
-                total, len(self._name_list), total//len(self._name_list), total//len(self._name_list)+1))
+        self.assign()
+        shuffle(self.list)
+        if total % self.sumDictList(self.list):
+            click.echo('Total:{}, Assign:{}, Per number:{}-{}'.format(
+                total, self.sumDictList(self.list), total//self.sumDictList(self.list), total//self.sumDictList(self.list)+1))
         else:
-            click.echo('Total:{}, Count:{}, Assign:{}'.format(
-                total, len(self._name_list), total//len(self._name_list)))
+            click.echo('Total:{}, Assign:{}, Per number:{}'.format(
+                total, self.sumDictList(self.list), total//self.sumDictList(self.list)))
+
+    def assign(self):
+        self.list = []
+        for i in self._name_list:
+            if '*' in i and isinstance(loads(scale := i.split('*', maxsplit=1)[1].strip()), (int, float)):
+                self.list.append(
+                    {'id': i.split('*')[0].strip(), 'number': self.num(scale)})
+            else:
+                self.list.append({'id': i, 'number': 1})
 
     @staticmethod
     def get_num(num):
@@ -63,12 +84,15 @@ class AssignByName(Assign):
         print_result = []
         while True:
             try:
-                num = self.get_num(self.total/len(self._name_list))
-                name = self._name_list.pop()
-                result += [name] * num
-                print_result += ['%s: %s' % (name, num)]
+                name = self.list.pop()
+                scale = name['number']
+                num = self.get_num(
+                    self.total/(self.sumDictList(self.list)+scale) * scale)
+                result += [name['id']] * num
+                print_result += ['%s: %s' % (name['id'] if name['number']
+                                             == 1 else name['id']+'*'+str(name['number']), num)]
                 self.total -= num
-            except ZeroDivisionError:
+            except IndexError:
                 break
         if self.random:
             shuffle(result)
@@ -129,10 +153,6 @@ class AssignByContent(Assign):
             click.pause('Press any key to exit ...')
             sys.exit()
         return content_list
-
-    @staticmethod
-    def sumDictList(dictList):
-        return sum([int(i['number']) for i in dictList])
 
     def assign_once(self):
         if len(self.result[0]) < self.max_count - 1:
