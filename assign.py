@@ -70,8 +70,13 @@ class AssignByName(Assign):
         self.list = []
         for i in self._name_list:
             if '*' in i and isinstance(loads(scale := i.split('*', maxsplit=1)[1].strip()), (int, float)):
-                self.list.append(
-                    {'id': i.split('*')[0].strip(), 'number': self.num(scale)})
+                if self.num(scale) > 0 and self.num(scale) <= self.total/len(self._name_list):
+                    self.list.append(
+                        {'id': i.split('*')[0].strip(), 'number': self.num(scale)})
+                else:
+                    print(f'[Warning]Ignoring invalid scale in {i}.')
+                    self.list.append(
+                        {'id': i.split('*')[0].strip(), 'number': 1})
             else:
                 self.list.append({'id': i, 'number': 1})
 
