@@ -42,11 +42,16 @@ class Assign:
         return None
 
     @staticmethod
-    def num(string):
-        try:
-            return int(string)
-        except ValueError:
-            return float(string)
+    def num(obj):
+        if isinstance(obj, str):
+            try:
+                return int(obj)
+            except ValueError:
+                return float(obj)
+        elif isinstance(obj, float):
+            return round(obj, 2)
+        else:
+            return obj
 
     def sumDictList(self, dictList):
         return sum([self.num(i['number']) for i in dictList])
@@ -59,12 +64,12 @@ class AssignByName(Assign):
         self.random = random
         self.assign()
         shuffle(self.list)
-        if total % self.sumDictList(self.list):
+        if (total * 100) % (self.sumDictList(self.list) * 100):
             click.echo('Total:{}, Assign:{}, Per number:{}-{}'.format(
-                total, self.sumDictList(self.list), total//self.sumDictList(self.list), total//self.sumDictList(self.list)+1))
+                total, self.sumDictList(self.list), int(total//self.sumDictList(self.list)), int(total//self.sumDictList(self.list))+1))
         else:
             click.echo('Total:{}, Assign:{}, Per number:{}'.format(
-                total, self.sumDictList(self.list), total//self.sumDictList(self.list)))
+                total, self.sumDictList(self.list), int(total//self.sumDictList(self.list))))
 
     def assign(self):
         self.list = []
